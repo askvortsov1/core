@@ -35,6 +35,7 @@ class SkeletonCommand extends AbstractCommand
      */
     protected function fire()
     {
+        $this->output->writeln(getcwd());
         if ($this->input->getArgument('enable') == 'On') {
             $out = StructureSkeleton::enableShared();
         } elseif ($this->input->getArgument('enable') == 'Off') {

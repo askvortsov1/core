@@ -21,6 +21,8 @@ class Installation
     private $baseUrl;
     private $customSettings = [];
 
+    private $switchSkeletonToShared = false;
+
     /** @var DatabaseConfig */
     private $dbConfig;
 
@@ -84,6 +86,12 @@ class Installation
         return $this;
     }
 
+    public function switchSkeletonToShared($switch) {
+        $this->switchSkeletonToShared = $switch;
+
+        return $this;
+    }
+
     public function prerequisites(): Prerequisite\PrerequisiteInterface
     {
         return new Prerequisite\Composite(
@@ -101,6 +109,12 @@ class Installation
                 $this->basePath,
                 $this->getAssetPath(),
                 $this->storagePath,
+            ]),
+            new Prerequisite\ForbiddenPaths([
+                '/vendor/composer/installed.json',
+                '/composer.json',
+                '/config.php',
+                'https://google.com'
             ])
         );
     }
@@ -135,6 +149,12 @@ class Installation
         $pipeline->pipe(function () {
             return new Steps\CreateAdminUser($this->db, $this->adminUser);
         });
+
+        if ($this->switchSkeletonToShared) {
+            $pipeline->pipe(function () {
+                return new Steps\SwitchSkeletonToShared();
+            });
+        }
 
         $pipeline->pipe(function () {
             return new Steps\PublishAssets($this->vendorPath, $this->getAssetPath());

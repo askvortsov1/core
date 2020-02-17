@@ -24,6 +24,7 @@ class FileDataProvider implements DataProviderInterface
     protected $databaseConfiguration = [];
     protected $adminUser = [];
     protected $settings = [];
+    protected $switchSkeletonToShared = false;
 
     public function __construct(InputInterface $input)
     {
@@ -48,6 +49,7 @@ class FileDataProvider implements DataProviderInterface
             $this->databaseConfiguration = $configuration['databaseConfiguration'] ?? [];
             $this->adminUser = $configuration['adminUser'] ?? [];
             $this->settings = $configuration['settings'] ?? [];
+            $this->switchSkeletonToShared = $configuration['switchSkeletonToShared'] ?? false;
         } else {
             throw new Exception('Configuration file does not exist.');
         }

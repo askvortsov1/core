@@ -17,6 +17,7 @@ use Illuminate\Support\Str;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Question\Question;
 
 class UserDataProvider implements DataProviderInterface
@@ -44,7 +45,8 @@ class UserDataProvider implements DataProviderInterface
             ->baseUrl($this->getBaseUrl())
             ->databaseConfig($this->getDatabaseConfiguration())
             ->adminUser($this->getAdminUser())
-            ->settings($this->getSettings());
+            ->settings($this->getSettings())
+            ->switchSkeletonToShared($this->getSkeletonStructure());
     }
 
     private function getDatabaseConfiguration(): DatabaseConfig
@@ -115,9 +117,19 @@ class UserDataProvider implements DataProviderInterface
         ];
     }
 
-    private function ask($question, $default = null)
+    private function getSkeletonStructure()
     {
-        $question = new Question("<question>$question</question> ", $default);
+        $this->output->writeln("<error>WARNING: This is ONLY recommended if you are on shared hosting AND you can't change the document root to the public subdirectory.</error>");
+        return $this->ask('Use Shared Hosting structure?', false, true);
+    }
+
+    private function ask($question, $default = null, $boolean = false)
+    {
+        if ($boolean) {
+            $question = new ConfirmationQuestion("<question>$question</question> ", $default);
+        } else {
+            $question = new Question("<question>$question</question> ", $default);
+        }
 
         return $this->questionHelper->ask($this->input, $this->output, $question);
     }

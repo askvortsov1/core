@@ -19,6 +19,7 @@ use Flarum\Http\Middleware\StartSession;
 use Flarum\Install\Console\InstallCommand;
 use Illuminate\Contracts\Container\Container;
 use Laminas\Stratigility\MiddlewarePipe;
+use Flarum\Foundation\Console\SkeletonCommand;
 
 class Installer implements AppInterface
 {
@@ -60,6 +61,7 @@ class Installer implements AppInterface
             new InstallCommand(
                 $this->container->make(Installation::class)
             ),
+            $this->container->make(SkeletonCommand::class),
         ];
     }
 }

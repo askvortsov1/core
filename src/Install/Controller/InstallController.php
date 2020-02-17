@@ -65,6 +65,7 @@ class InstallController implements RequestHandlerInterface
                     'mail_from' => $baseUrl->toEmail('noreply'),
                     'welcome_title' => 'Welcome to '.Arr::get($input, 'forumTitle'),
                 ])
+                ->switchSkeletonToShared(Arr::get($input, 'switchSkeletonToShared', false))
                 ->build();
         } catch (ValidationFailed $e) {
             return new Response\HtmlResponse($e->getMessage(), 500);

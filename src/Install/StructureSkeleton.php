@@ -8,6 +8,7 @@
  */
 
 namespace Flarum\Install;
+use Flarum\Foundation\Console\CacheClearCommand;
 
 class StructureSkeleton
 {
@@ -33,23 +34,15 @@ class StructureSkeleton
         ];
 
         foreach ($compatPaths as $compatPath => $appPath) {
-            if (! file_exists($appPath) or ($strict and md5_file($compatPath) != md5_file($appPath))) {
+            if (!file_exists($appPath) or ($strict and md5_file($compatPath) != md5_file($appPath))) {
                 copy($compatPath, $appPath);
             }
         }
     }
 
-    private static function switchSharedFiles($path)
-    {
-        $root = getcwd();
-        rename($path, $path.'.tmp');
-        rename($path.'.shared', $path);
-        rename($path.'.tmp', $path.'.shared');
-    }
-
     public static function enableShared()
     {
-        self::compat();
+        self::compat(false);
         $root = getcwd();
         // If shared hosting optimized, don't use public folder
         if (! file_exists($root.'/assets')) {
@@ -57,8 +50,10 @@ class StructureSkeleton
             foreach (self::$publicPaths as $dedicatedPath => $sharedPath) {
                 exec('mv -f '.$root.$dedicatedPath.' '.$root.$sharedPath);
             }
-            self::switchSharedFiles($root.'/site.php');
-            self::switchSharedFiles($root.'/.nginx.conf');
+            rename($root.'/site.php', $root.'/site.php.nonshared');
+            rename($root.'/site.php.shared', $root.'/site.php');
+            rename($root.'/.nginx.conf', $root.'/.nginx.conf.nonshared');
+            rename($root.'/.nginx.conf.shared', $root.'/.nginx.conf');
 
             return 'Restructured into shared hosting mode.';
         } else {
@@ -68,15 +63,17 @@ class StructureSkeleton
 
     public static function disableShared()
     {
-        self::compat();
+        self::compat(false);
         $root = getcwd();
         // If shared hosting not optimized use public folder
         if (file_exists($root.'/assets')) {
             foreach (self::$publicPaths as $dedicatedPath => $sharedPath) {
                 exec('mv -f '.$root.$sharedPath.' '.$root.$dedicatedPath);
             }
-            self::switchSharedFiles($root.'/site.php');
-            self::switchSharedFiles($root.'/.nginx.conf');
+            rename($root.'/site.php', $root.'/site.php.shared');
+            rename($root.'/site.php.nonshared', $root.'/site.php');
+            rename($root.'/.nginx.conf', $root.'/.nginx.conf.shared');
+            rename($root.'/.nginx.conf.nonshared', $root.'/.nginx.conf');
 
             return 'Restructured out of shared hosting mode.';
         } else {

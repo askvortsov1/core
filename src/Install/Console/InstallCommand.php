@@ -66,6 +66,7 @@ class InstallCommand extends AbstractCommand
         $problems = $this->installation->prerequisites()->problems();
 
         if ($problems->isEmpty()) {
+            $this->output->writeln("hi" . getcwd());
             $this->info('Installing Flarum...');
 
             $this->install();
@@ -87,6 +88,7 @@ class InstallCommand extends AbstractCommand
 
     protected function install()
     {
+        $this->output->writeln("hi" . getcwd());
         $pipeline = $this->dataSource->configure(
             $this->installation->configPath($this->input->getOption('config'))
         )->build();
@@ -96,6 +98,7 @@ class InstallCommand extends AbstractCommand
 
     private function runPipeline(Pipeline $pipeline)
     {
+        $this->output->writeln("hi".getcwd());
         $pipeline
             ->on('start', function (Step $step) {
                 $this->output->write($step->getMessage().'...');
