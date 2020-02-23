@@ -16,6 +16,7 @@ use Flarum\Foundation\Console\CacheClearCommand;
 use Flarum\Foundation\Console\InfoCommand;
 use Flarum\Http\Middleware\DispatchRoute;
 use Flarum\Settings\SettingsRepositoryInterface;
+use Flarum\User\Console\ResetPasswordCommand;
 use Illuminate\Contracts\Container\Container;
 use Laminas\Stratigility\Middleware\OriginalMessages;
 use Laminas\Stratigility\MiddlewarePipe;
@@ -121,6 +122,7 @@ class InstalledApp implements AppInterface
             $this->container->make(MigrateCommand::class),
             $this->container->make(ResetCommand::class),
             $this->container->make(CacheClearCommand::class),
+            $this->container->make(ResetPasswordCommand::class)
         ];
     }
 }
