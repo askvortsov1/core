@@ -58,7 +58,8 @@ class Post extends AbstractModel
      * @var array
      */
     protected $casts = [
-        'is_private' => 'boolean'
+        'is_private' => 'boolean',
+        'is_mod_only' => 'boolean'
     ];
 
     /**

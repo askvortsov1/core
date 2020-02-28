@@ -50,6 +50,9 @@ import PostMeta from './components/PostMeta';
 import EditUserModal from './components/EditUserModal';
 import SearchSource from './components/SearchSource';
 import DiscussionRenamedPost from './components/DiscussionRenamedPost';
+import PostDeletedPost from './components/PostDeletedPost';
+import PostHiddenPost from './components/PostHiddenPost';
+import PostRestoredPost from './components/PostRestoredPost';
 import DiscussionComposer from './components/DiscussionComposer';
 import LogInButtons from './components/LogInButtons';
 import NotificationList from './components/NotificationList';
@@ -119,6 +122,9 @@ export default Object.assign(compat, {
   'components/EditUserModal': EditUserModal,
   'components/SearchSource': SearchSource,
   'components/DiscussionRenamedPost': DiscussionRenamedPost,
+  'components/PostDeletedPost': PostDeletedPost,
+  'components/PostHiddenPost': PostHiddenPost,
+  'components/PostRestoredPost': PostRestoredPost,
   'components/DiscussionComposer': DiscussionComposer,
   'components/LogInButtons': LogInButtons,
   'components/NotificationList': NotificationList,

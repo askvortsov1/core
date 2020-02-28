@@ -25,13 +25,26 @@ class PostServiceProvider extends AbstractServiceProvider
 
         $events = $this->app->make('events');
         $events->subscribe(PostPolicy::class);
+
+        $events->listen(
+            Event\Deleted::class, [PostModerationLogger::class, 'deleted']
+        );
+        $events->listen(
+            Event\Hidden::class, [PostModerationLogger::class, 'hidden']
+        );
+        $events->listen(
+            Event\Restored::class, [PostModerationLogger::class, 'restored']
+        );
     }
 
     public function registerPostTypes()
     {
         $models = [
             CommentPost::class,
-            DiscussionRenamedPost::class
+            DiscussionRenamedPost::class,
+            PostDeletedPost::class,
+            PostHiddenPost::class,
+            PostRestoredPost::class
         ];
 
         $this->app->make('events')->fire(

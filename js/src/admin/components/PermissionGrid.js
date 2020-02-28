@@ -192,6 +192,12 @@ export default class PermissionGrid extends Component {
       permission: 'discussion.viewIpsPosts'
     }, 110);
 
+    items.add('viewModOnlyPosts', {
+      icon: 'fas fa-gavel',
+      label: app.translator.trans('core.admin.permissions.view_mod_only_label'),
+      permission: 'discussion.viewModOnly'
+    }, 110);
+
     items.add('renameDiscussions', {
       icon: 'fas fa-i-cursor',
       label: app.translator.trans('core.admin.permissions.rename_discussions_label'),

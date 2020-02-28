@@ -85,6 +85,16 @@ class PostPolicy extends AbstractPolicy
                 });
         });
 
+        // Check for permissions to view mod-only posts
+        if (! $actor->hasPermission('discussion.hidePosts')) {
+            $query->where('is_mod_only', false)
+                ->orWhere(function ($query) use ($actor) {
+                    $this->events->dispatch(
+                        new ScopeModelVisibility($query, $actor, 'viewModOnly')
+                    );
+                });
+        }
+
         // Hide hidden posts, unless they are authored by the current user, or
         // the current user has permission to view hidden posts in the
         // discussion.

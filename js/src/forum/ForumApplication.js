@@ -10,6 +10,9 @@ import Composer from './components/Composer';
 import DiscussionRenamedNotification from './components/DiscussionRenamedNotification';
 import CommentPost from './components/CommentPost';
 import DiscussionRenamedPost from './components/DiscussionRenamedPost';
+import PostDeletedPost from './components/PostDeletedPost';
+import PostHiddenPost from './components/PostHiddenPost';
+import PostRestoredPost from './components/PostRestoredPost';
 import routes from './routes';
 import alertEmailConfirmation from './utils/alertEmailConfirmation';
 import Application from '../common/Application';
@@ -31,7 +34,10 @@ export default class ForumApplication extends Application {
    */
   postComponents = {
     comment: CommentPost,
-    discussionRenamed: DiscussionRenamedPost
+    discussionRenamed: DiscussionRenamedPost,
+    postDeleted: PostDeletedPost,
+    postHidden: PostHiddenPost,
+    postRestored: PostRestoredPost
   };
 
   /**
