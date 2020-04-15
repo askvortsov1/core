@@ -9,33 +9,22 @@
 
 namespace Flarum\Tests\integration;
 
-use Dflydev\FigCookies\SetCookie;
+use Flarum\Extend\ExtenderInterface;
 use Flarum\Foundation\InstalledSite;
 use Illuminate\Database\ConnectionInterface;
-use Laminas\Diactoros\CallbackStream;
 use Laminas\Diactoros\ServerRequest;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 
 abstract class TestCase extends \PHPUnit\Framework\TestCase
 {
-    public function setUp()
-    {
-        parent::setUp();
-
-        // Boot the Flarum app
-        $this->app();
-    }
+    use BuildsHttpRequests;
 
     /**
      * @var \Flarum\Foundation\InstalledApp
      */
     protected $app;
-
-    /**
-     * @var \Psr\Http\Server\RequestHandlerInterface
-     */
-    protected $server;
 
     /**
      * @return \Flarum\Foundation\InstalledApp
@@ -53,11 +42,36 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
                 include __DIR__.'/tmp/config.php'
             );
 
+            $site->extendWith($this->extenders);
+
             $this->app = $site->bootApp();
-            $this->server = $this->app->getRequestHandler();
         }
 
         return $this->app;
+    }
+
+    /**
+     * @var ExtenderInterface[]
+     */
+    protected $extenders = [];
+
+    protected function extend(ExtenderInterface $extender)
+    {
+        $this->extenders[] = $extender;
+    }
+
+    /**
+     * @var RequestHandlerInterface
+     */
+    protected $server;
+
+    protected function server(): RequestHandlerInterface
+    {
+        if (is_null($this->server)) {
+            $this->server = $this->app()->getRequestHandler();
+        }
+
+        return $this->server;
     }
 
     protected $database;
@@ -111,13 +125,13 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
      */
     protected function send(ServerRequestInterface $request): ResponseInterface
     {
-        return $this->server->handle($request);
+        return $this->server()->handle($request);
     }
 
     /**
      * Build a HTTP request that can be passed through middleware.
      *
-     * This method simplifies building HTTP request for use in our HTTP-level
+     * This method simplifies building HTTP requests for use in our HTTP-level
      * integration tests. It provides options for all features repeatedly being
      * used in those tests.
      *
@@ -129,6 +143,9 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
      *   - "json" should point to a JSON-serializable object that will be
      *     serialized and used as request body. The corresponding Content-Type
      *     header will be set automatically.
+     *   - "authenticatedAs" should identify an *existing* user by ID. This will
+     *     cause an access token to be created for this user, which will be used
+     *     to authenticate the request via the "Authorization" header.
      *   - "cookiesFrom" should hold a response object from a previous HTTP
      *     interaction. All cookies returned from the server in that response
      *     (via the "Set-Cookie" header) will be copied to the cookie params of
@@ -141,32 +158,26 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 
         // Do we want a JSON request body?
         if (isset($options['json'])) {
-            $request = $request
-                ->withHeader('Content-Type', 'application/json')
-                ->withBody(
-                    new CallbackStream(function () use ($options) {
-                        return json_encode($options['json']);
-                    })
-                );
+            $request = $this->requestWithJsonBody(
+                $request,
+                $options['json']
+            );
+        }
+
+        // Authenticate as a given user
+        if (isset($options['authenticatedAs'])) {
+            $request = $this->requestAsUser(
+                $request,
+                $options['authenticatedAs']
+            );
         }
 
         // Let's copy the cookies from a previous response
         if (isset($options['cookiesFrom'])) {
-            /** @var ResponseInterface $previousResponse */
-            $previousResponse = $options['cookiesFrom'];
-
-            $cookies = array_reduce(
-                $previousResponse->getHeader('Set-Cookie'),
-                function ($memo, $setCookieString) {
-                    $setCookie = SetCookie::fromSetCookieString($setCookieString);
-                    $memo[$setCookie->getName()] = $setCookie->getValue();
-
-                    return $memo;
-                },
-                []
+            $request = $this->requestWithCookiesFrom(
+                $request,
+                $options['cookiesFrom']
             );
-
-            $request = $request->withCookieParams($cookies);
         }
 
         return $request;

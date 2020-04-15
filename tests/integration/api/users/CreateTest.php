@@ -14,11 +14,11 @@ use Flarum\Tests\integration\RetrievesAuthorizedUsers;
 use Flarum\Tests\integration\TestCase;
 use Flarum\User\User;
 
-class CreationTest extends TestCase
+class CreateTest extends TestCase
 {
     use RetrievesAuthorizedUsers;
 
-    public function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -35,9 +35,6 @@ class CreationTest extends TestCase
             'settings' => [
                 ['key' => 'mail_driver', 'value' => 'log'],
             ],
-            'access_tokens' => [
-                ['token' => 'admintoken', 'user_id' => 1],
-            ],
         ]);
     }
 
@@ -48,7 +45,8 @@ class CreationTest extends TestCase
     {
         $response = $this->send(
             $this->request(
-                'POST', '/api/users',
+                'POST',
+                '/api/users',
                 [
                     'json' => ['data' => ['attributes' => []]],
                 ]
@@ -91,7 +89,8 @@ class CreationTest extends TestCase
     {
         $response = $this->send(
             $this->request(
-                'POST', '/api/users',
+                'POST',
+                '/api/users',
                 [
                     'json' => [
                         'data' => [
@@ -111,7 +110,7 @@ class CreationTest extends TestCase
         /** @var User $user */
         $user = User::where('username', 'test')->firstOrFail();
 
-        $this->assertEquals(0, $user->is_activated);
+        $this->assertEquals(0, $user->is_email_confirmed);
         $this->assertEquals('test', $user->username);
         $this->assertEquals('test@machine.local', $user->email);
     }
@@ -123,8 +122,10 @@ class CreationTest extends TestCase
     {
         $response = $this->send(
             $this->request(
-                'POST', '/api/users',
+                'POST',
+                '/api/users',
                 [
+                    'authenticatedAs' => 1,
                     'json' => [
                         'data' => [
                             'attributes' => [
@@ -136,7 +137,7 @@ class CreationTest extends TestCase
                         ]
                     ],
                 ]
-            )->withHeader('Authorization', 'Token admintoken')
+            )
         );
 
         $this->assertEquals(201, $response->getStatusCode());
@@ -158,7 +159,8 @@ class CreationTest extends TestCase
 
         $response = $this->send(
             $this->request(
-                'POST', '/api/users',
+                'POST',
+                '/api/users',
                 [
                     'json' => [
                         'data' => [

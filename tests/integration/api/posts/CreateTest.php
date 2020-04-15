@@ -7,22 +7,17 @@
  * LICENSE file that was distributed with this source code.
  */
 
-namespace Flarum\Tests\integration\api\Controller;
+namespace Flarum\Tests\integration\api\posts;
 
 use Carbon\Carbon;
-use Flarum\Api\Controller\CreatePostController;
-use Flarum\User\User;
-use Illuminate\Support\Arr;
+use Flarum\Tests\integration\RetrievesAuthorizedUsers;
+use Flarum\Tests\integration\TestCase;
 
-class CreatePostControllerTest extends ApiControllerTestCase
+class CreateTest extends TestCase
 {
-    protected $controller = CreatePostController::class;
+    use RetrievesAuthorizedUsers;
 
-    protected $data = [
-        'content' => 'reply with predetermined content for automated testing - too-obscure'
-    ];
-
-    public function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -51,13 +46,21 @@ class CreatePostControllerTest extends ApiControllerTestCase
      */
     public function can_create_reply()
     {
-        $this->actor = User::find(2);
-
-        $body = [];
-        Arr::set($body, 'data.attributes', $this->data);
-        Arr::set($body, 'data.relationships.discussion.data.id', 1);
-
-        $response = $this->callWith($body);
+        $response = $this->send(
+            $this->request('POST', '/api/posts', [
+                'authenticatedAs' => 2,
+                'json' => [
+                    'data' => [
+                        'attributes' => [
+                            'content' => 'reply with predetermined content for automated testing - too-obscure',
+                        ],
+                        'relationships' => [
+                            'discussion' => ['data' => ['id' => 1]],
+                        ],
+                    ],
+                ],
+            ])
+        );
 
         $this->assertEquals(201, $response->getStatusCode());
     }

@@ -39,11 +39,14 @@ class Server
             $console->add($command);
         }
 
-        $this->extend($console);
+        $this->extend($console); // deprecated
 
         exit($console->run());
     }
 
+    /**
+     * @deprecated
+     */
     private function extend(ConsoleApplication $console)
     {
         $app = Application::getInstance();
@@ -52,7 +55,7 @@ class Server
 
         $events = $app->make(Dispatcher::class);
 
-        $events->fire(new Configuring($app, $console));
+        $events->dispatch(new Configuring($app, $console));
     }
 
     private function handleErrors(Application $app, ConsoleApplication $console)
