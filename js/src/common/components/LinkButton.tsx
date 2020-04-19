@@ -1,6 +1,6 @@
 import Button, { ButtonProps } from './Button';
 
-interface LinkButtonProps extends ButtonProps {
+export interface LinkButtonProps extends ButtonProps {
     active?: boolean;
     oncreate?: Function;
     href?: string;
@@ -18,7 +18,7 @@ interface LinkButtonProps extends ButtonProps {
  * - `href` The URL to link to. If the current URL `m.route()` matches this,
  *   the `active` prop will automatically be set to true.
  */
-export default class LinkButton extends Button<LinkButtonProps> {
+export default class LinkButton<T extends LinkButtonProps> extends Button<LinkButtonProps> {
     static initProps(props: LinkButtonProps) {
         props.active = this.isActive(props);
     }
