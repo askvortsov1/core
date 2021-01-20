@@ -105,11 +105,6 @@ abstract class AbstractSerializer extends BaseAbstractSerializer
             }
         }
 
-        // Deprecated in beta 15, removed in beta 16
-        static::$dispatcher->dispatch(
-            new Serializing($this, $model, $attributes)
-        );
-
         return $attributes;
     }
 
@@ -153,11 +148,6 @@ abstract class AbstractSerializer extends BaseAbstractSerializer
      */
     protected function getCustomRelationship($model, $name)
     {
-        // Deprecated in beta 15, removed in beta 16
-        $relationship = static::$dispatcher->until(
-            new GetApiRelationship($this, $name, $model)
-        );
-
         foreach (array_merge([static::class], class_parents($this)) as $class) {
             $callback = Arr::get(static::$customRelations, "$class.$name");
 

@@ -9,8 +9,6 @@
 
 namespace Flarum\Api\Controller;
 
-use Flarum\Api\Event\WillGetData;
-use Flarum\Api\Event\WillSerializeData;
 use Flarum\Api\JsonApiResponse;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Contracts\Events\Dispatcher;
@@ -107,11 +105,6 @@ abstract class AbstractSerializeController implements RequestHandlerInterface
             }
         }
 
-        // Deprected in beta 15, removed in beta 16
-        static::$events->dispatch(
-            new WillGetData($this)
-        );
-
         $data = $this->data($request, $document);
 
         foreach (array_reverse(array_merge([static::class], class_parents($this))) as $class) {
@@ -121,11 +114,6 @@ abstract class AbstractSerializeController implements RequestHandlerInterface
                 }
             }
         }
-
-        // Deprecated in beta 15, removed in beta 16
-        static::$events->dispatch(
-            new WillSerializeData($this, $data, $request, $document)
-        );
 
         $serializer = static::$container->make($this->serializer);
         $serializer->setRequest($request);
