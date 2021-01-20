@@ -41,11 +41,6 @@ trait ScopeVisibilityTrait
      */
     public function scopeWhereVisibleTo(Builder $query, User $actor, string $ability = 'view')
     {
-        /**
-         * @deprecated beta 15, remove beta 15
-         */
-        static::$dispatcher->dispatch(new ScopeModelVisibility($query, $actor, $ability));
-
         foreach (array_reverse(array_merge([static::class], class_parents($this))) as $class) {
             foreach (Arr::get(static::$visibilityScopers, "$class.*", []) as $listener) {
                 $listener($actor, $query, $ability);
