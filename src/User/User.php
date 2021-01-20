@@ -142,13 +142,6 @@ class User extends AbstractModel
 
             Notification::whereSubject($user)->delete();
         });
-
-        /**
-         * @deprecated beta 15, remove beta 16
-         */
-        static::$dispatcher->dispatch(
-            new ConfigureUserPreferences
-        );
     }
 
     /**
@@ -801,20 +794,6 @@ class User extends AbstractModel
     public static function setHasher(Hasher $hasher)
     {
         static::$hasher = $hasher;
-    }
-
-    /**
-     * @deprecated beta 15, remove beta 16. Use `registerPreference` instead.
-     *
-     * Register a preference with a transformer and a default value.
-     *
-     * @param string $key
-     * @param callable $transformer
-     * @param mixed $default
-     */
-    public static function addPreference($key, callable $transformer = null, $default = null)
-    {
-        return static::registerPreference($key, $transformer, $default);
     }
 
     /**
