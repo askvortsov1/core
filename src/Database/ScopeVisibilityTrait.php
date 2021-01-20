@@ -9,7 +9,6 @@
 
 namespace Flarum\Database;
 
-use Flarum\Event\ScopeModelVisibility;
 use Flarum\User\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Arr;

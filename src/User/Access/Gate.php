@@ -10,7 +10,6 @@
 namespace Flarum\User\Access;
 
 use Flarum\Database\AbstractModel;
-use Flarum\Event\GetPermission;
 use Flarum\User\User;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Contracts\Events\Dispatcher;

@@ -10,7 +10,6 @@
 namespace Flarum\Post;
 
 use DateTime;
-use Flarum\Event\ConfigurePostTypes;
 use Flarum\Foundation\AbstractServiceProvider;
 use Flarum\Post\Access\ScopePostVisibility;
 
